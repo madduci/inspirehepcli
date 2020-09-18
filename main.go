@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"ihclient"
-	"ihconverter"
+	"github.com/madduci/inspirehepcli/ihclient"
+	"github.com/madduci/inspirehepcli/ihconverter"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,11 +15,11 @@ func SaveJsonToFile(inputData string, outputFile string) {
 		log.Fatalln("error:", err)
 	}
 
-	w := bufio.NewWriter(f)
-	bytes, err := w.Write([]byte(inputData))
+	bytes, err := f.Write([]byte(inputData))
 	if err != nil{
 		log.Fatalln("error:", err)
 	}
+	_ = f.Sync()
 	log.Printf("Data written successfully: %d bytes\n", bytes)
 }
 

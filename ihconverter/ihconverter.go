@@ -25,9 +25,9 @@ type Links struct {
 }
 
 type Metadata struct {
-	Authors         []Author         `json:"authors"`
-	PublicationInfo []PublicationInfo  `json:"publication_info"`
-	Titles          []Title          `json:"titles"`
+	Authors         []Author          `json:"authors"`
+	PublicationInfo []PublicationInfo `json:"publication_info"`
+	Titles          []Title           `json:"titles"`
 }
 
 type Author struct {
@@ -84,6 +84,6 @@ func ConvertJsonToMarkdown(jsonData string) string {
 		result += fmt.Sprint("**", publication.Metadata.PublicationInfo[0].Freetext ,"**")
 	}
 	// Append InspireHep Bibtex Link
-	result += fmt.Sprintf(",[inspireHep](" + publication.Links.Bibtex + ")")
+	result += fmt.Sprintf(",[inspireHep](" + publication.Links.Bibtex + ")\n")
 	return result
 }

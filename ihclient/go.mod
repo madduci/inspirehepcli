@@ -1,4 +1,4 @@
-module ihclient
+module github.com/madduci/inspirehepcli/ihclient
 
 go 1.15
 
