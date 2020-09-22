@@ -11,28 +11,28 @@ import (
 
 func SaveJsonToFile(inputData string, outputFile string) {
 	f, err := os.Create(outputFile)
-	if err != nil{
+	if err != nil {
 		log.Fatalln("error:", err)
 	}
 
 	bytes, err := f.Write([]byte(inputData))
-	if err != nil{
+	if err != nil {
 		log.Fatalln("error:", err)
 	}
 	_ = f.Sync()
 	log.Printf("Data written successfully: %d bytes\n", bytes)
 }
 
-func GetApplicationPath() string{
+func GetApplicationPath() string {
 	ex, err := os.Executable()
 	if err != nil {
-	panic(err)
+		panic(err)
 	}
 	exPath := filepath.Dir(ex)
 	return exPath
 }
 
-func GetApplicationName() string{
+func GetApplicationName() string {
 	ex, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -41,7 +41,7 @@ func GetApplicationName() string{
 	return exPath
 }
 
-func PrintUsage(){
+func PrintUsage() {
 	log.Println("Usage: %s [LiteratureId] [Options]", GetApplicationName())
 	log.Println("Options:")
 	log.Println("- md        output the result as markdown")
@@ -52,6 +52,7 @@ func main() {
 	log.Println("### InspireHep CLI")
 	outputFolder := GetApplicationPath()
 	if len(os.Args) == 1 {
+		PrintUsage()
 		log.Fatalln("No argument supplied. Please provide the Publication ID and output type")
 	}
 	// Prepare required information
@@ -62,13 +63,13 @@ func main() {
 	log.Printf("Retrieving information for ID %s\n", literatureId)
 	publicationData := ihclient.GetLiteratureInfoById(literatureId)
 
-	log.Printf("Extracting data\n" )
+	log.Printf("Extracting data\n")
 	if len(os.Args) > 2 && os.Args[2] == "md" {
 		outputFile = fmt.Sprintf("%s/%s.md", outputFolder, literatureId)
-		publicationInformation = ihconverter.ConvertJsonToMarkdown(publicationData)
+		publicationInformation = ihconverter.ConvertLiteratureJsonToMarkdown(publicationData)
 	} else {
 		outputFile = fmt.Sprintf("%s/%s.html", outputFolder, literatureId)
-		publicationInformation = ihconverter.ConvertJsonToHtml(publicationData)
+		publicationInformation = ihconverter.ConvertLiteratureJsonToHtml(publicationData)
 	}
 
 	log.Printf("Saving data in %s\n", outputFile)
