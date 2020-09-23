@@ -4,12 +4,21 @@ import (
 	"fmt"
 	"github.com/madduci/inspirehepcli/ihclient"
 	"github.com/madduci/inspirehepcli/ihconverter"
+	"gopkg.in/alecthomas/kingpin.v2"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func SaveJsonToFile(inputData string, outputFile string) {
+var (
+	outputType      = kingpin.Flag("output", "The desired output type. Defaults to html.").Default("html").Short('o').String()
+	useArxivId      = kingpin.Flag("arxiv", "Uses the Arxiv ID for the search (default).").Short('a').Default("true").Bool()
+	useLiteratureId = kingpin.Flag("literature", "Uses the Literature ID for the search.").Short('l').Default("false").Bool()
+	publicationId   = kingpin.Arg("id", "Publication ID to look for in InspireHEP.").Required().String()
+)
+
+func saveJsonToFile(inputData string, outputFile string) {
 	f, err := os.Create(outputFile)
 	if err != nil {
 		log.Fatalln("error:", err)
@@ -23,7 +32,7 @@ func SaveJsonToFile(inputData string, outputFile string) {
 	log.Printf("Data written successfully: %d bytes\n", bytes)
 }
 
-func GetApplicationPath() string {
+func getApplicationPath() string {
 	ex, err := os.Executable()
 	if err != nil {
 		panic(err)
@@ -32,46 +41,34 @@ func GetApplicationPath() string {
 	return exPath
 }
 
-func GetApplicationName() string {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Base(ex)
-	return exPath
-}
-
-func PrintUsage() {
-	log.Println("Usage: %s [LiteratureId] [Options]", GetApplicationName())
-	log.Println("Options:")
-	log.Println("- md        output the result as markdown")
-	log.Println("- html      output the result as html (default)")
-}
-
 func main() {
+	kingpin.Version("1.2.0")
+	kingpin.Parse()
+
 	log.Println("### InspireHep CLI")
-	outputFolder := GetApplicationPath()
-	if len(os.Args) == 1 {
-		PrintUsage()
-		log.Fatalln("No argument supplied. Please provide the Publication ID and output type")
-	}
+	outputFolder := getApplicationPath()
+
 	// Prepare required information
-	literatureId := os.Args[1]
 	outputFile := ""
 	publicationInformation := ""
 
-	log.Printf("Retrieving information for ID %s\n", literatureId)
-	publicationData := ihclient.GetLiteratureInfoById(literatureId)
+	log.Printf("Retrieving information for ID %s\n", *publicationId)
+	publicationData := ""
+	if *useArxivId {
+		publicationData = ihclient.GetLiteratureInfoByArxiv(*publicationId)
+	} else if *useLiteratureId {
+		publicationData = ihclient.GetLiteratureInfoById(*publicationId)
+	}
 
 	log.Printf("Extracting data\n")
-	if len(os.Args) > 2 && os.Args[2] == "md" {
-		outputFile = fmt.Sprintf("%s/%s.md", outputFolder, literatureId)
-		publicationInformation = ihconverter.ConvertLiteratureJsonToMarkdown(publicationData)
+	if strings.Contains(*outputType, "md") {
+		outputFile = fmt.Sprintf("%s/%s.md", outputFolder, *publicationId)
+		publicationInformation = ihconverter.ConvertJsonToMarkdown(publicationData)
 	} else {
-		outputFile = fmt.Sprintf("%s/%s.html", outputFolder, literatureId)
-		publicationInformation = ihconverter.ConvertLiteratureJsonToHtml(publicationData)
+		outputFile = fmt.Sprintf("%s/%s.html", outputFolder, *publicationId)
+		publicationInformation = ihconverter.ConvertJsonToHtml(publicationData)
 	}
 
 	log.Printf("Saving data in %s\n", outputFile)
-	SaveJsonToFile(publicationInformation, outputFile)
+	saveJsonToFile(publicationInformation, outputFile)
 }
