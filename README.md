@@ -4,7 +4,7 @@ A CLI Client to look for publications in [InspireHEP](https://inspirehep.net) pr
 
 ### How it works
 
-- Retrieves information from InspireHEP by Literature ID
+- Retrieves information from InspireHEP by Literature ID or ArXiv ID
 - Extracts basic information from the JSON Payload (authors' list, publication name, journal name)
 - Converts the basic information to a Markdown/HTML file saved on disk
 
@@ -12,10 +12,17 @@ A CLI Client to look for publications in [InspireHEP](https://inspirehep.net) pr
 
 To retrieve publication information, simply execute the command:
 
-```inspirehepcli [LiteratureId] [Options]```
+```inspirehepcli [<flags>] <id>```
 
-and a file named `[LiteratureId].html` will be created on disk, in the same folder where the CLI client is stored.
-If [Options] is set to `md`, the output will be stored as Markdown, otherwise the default value is HTML.
+where <id> is the Publication ID to look for in InspireHEP, so a file named `<id>.html` will be created on disk, in the same folder where the CLI client is being executed.
+
+The following <flags> are allowed:
+
+* -o, --output="html"  The desired output type.
+* -a, --arxiv          Uses the Arxiv ID for the search (default).
+* -l, --literature     Uses the Literature ID for the search.
+*     --help           Show context-sensitive help (also try --help-long and --help-man).
+*     --version        Show application version.
 
 ### Build from Source
 
@@ -28,3 +35,4 @@ on your platform, or you can use the environment variables **GOOS** and **GOARCH
 ### Library Used
 
 - [Resty v2](https://github.com/go-resty/resty)
+- [Kingpin v2](gopkg.in/alecthomas/kingpin.v2)
