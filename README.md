@@ -21,8 +21,8 @@ The following <flags> are allowed:
 * -o, --output="html"  The desired output type.
 * -a, --arxiv          Uses the Arxiv ID for the search (default).
 * -l, --literature     Uses the Literature ID for the search.
-*     --help           Show context-sensitive help (also try --help-long and --help-man).
-*     --version        Show application version.
+* --help               Show context-sensitive help (also try --help-long and --help-man).
+* --version            Show application version.
 
 ### Build from Source
 
