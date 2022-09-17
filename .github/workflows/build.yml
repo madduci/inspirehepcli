@@ -41,6 +41,7 @@ jobs:
    
   post_build:
     needs: [build]
+    runs-on: ubuntu-latest
     steps:
     - name: Prepare Release
       uses: softprops/action-gh-release@v1
